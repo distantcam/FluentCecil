@@ -6,7 +6,7 @@ using Mono.Cecil.Cil;
 
 namespace FluentCecil
 {
-    public partial class FluentMethodBody
+    public partial class FluentMethodBody : IFluentInterface
     {
         private readonly ModuleDefinition module;
         private readonly ILProcessor ilProcessor;

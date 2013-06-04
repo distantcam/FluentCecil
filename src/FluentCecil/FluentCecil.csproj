@@ -64,6 +64,7 @@
       <DependentUpon>FluentMethodBody.OpCodes.tt</DependentUpon>
     </Compile>
     <Compile Include="ILVisitor.cs" />
+    <Compile Include="netfx\System\IFluentInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

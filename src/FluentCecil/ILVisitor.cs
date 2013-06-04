@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace FluentCecil
@@ -7,37 +6,34 @@ namespace FluentCecil
     public class ILVisitor : ExpressionVisitor
     {
         private readonly FluentMethodBody body;
-        private readonly Stack<Action> results;
 
         public ILVisitor(FluentMethodBody body)
         {
             this.body = body;
-            results = new Stack<Action>();
         }
 
         public void Evaluate(Expression node)
         {
             Visit(node);
-
-            while (results.Count > 0)
-            {
-                results.Pop()();
-            }
         }
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            results.Push(() => body.Call(node.Method));
+            var next = base.VisitMethodCall(node);
 
-            return base.VisitMethodCall(node);
+            body.Call(node.Method);
+
+            return next;
         }
 
         protected override Expression VisitConstant(ConstantExpression node)
         {
-            if (node.Type == typeof(string))
-                results.Push(() => body.Ldstr((string)node.Value));
+            var next = base.VisitConstant(node);
 
-            return base.VisitConstant(node);
+            if (node.Type == typeof(string))
+                body.Ldstr((string)node.Value);
+
+            return next;
         }
     }
 }

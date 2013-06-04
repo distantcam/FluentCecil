@@ -8,32 +8,32 @@
 <#@ output extension=".cs" #>
 <#
     var opcodes = typeof(OpCodes).GetFields(BindingFlags.Public | BindingFlags.Static)
-		.Select(f => new { Name = f.Name, OpCode = (OpCode)f.GetValue(null) })
-		.Where(a => !a.OpCode.Name.EndsWith("."))
-		.OrderBy(a => a.Name);
+        .Select(f => new { Name = f.Name, OpCode = (OpCode)f.GetValue(null) })
+        .Where(a => !a.OpCode.Name.EndsWith("."))
+        .OrderBy(a => a.Name);
 
-	var args = new Dictionary<OperandType, string[]>() {
-		{ OperandType.InlineArg, new string[] { "int" } },
-		{ OperandType.InlineBrTarget, new string[] { "Instruction" } },
-		{ OperandType.InlineField, new string[] { "FieldReference" } },
-		{ OperandType.InlineI, new string[] { "int" } },
-		{ OperandType.InlineI8, new string[] { "long" } },
-		{ OperandType.InlineMethod, new string[] { "MethodReference" } },
-		{ OperandType.InlineNone, new string[] { "" } },
-		{ OperandType.InlinePhi, new string[] { "" } },
-		{ OperandType.InlineR, new string[] { "double" } },
-		{ OperandType.InlineSig, new string[] { "" } },
-		{ OperandType.InlineString, new string[] { "string" } },
-		{ OperandType.InlineSwitch, new string[] { "Instruction[]" } },
-		{ OperandType.InlineTok, new string[] { "FieldReference", "MethodReference", "TypeReference" } },
-		{ OperandType.InlineType, new string[] { "TypeReference" } },
-		{ OperandType.InlineVar, new string[] { "int", "Instruction" } },
-		{ OperandType.ShortInlineArg, new string[] { "byte" } },
-		{ OperandType.ShortInlineBrTarget, new string[] { "Instruction" } },
-		{ OperandType.ShortInlineI, new string[] { "byte" } },		
-		{ OperandType.ShortInlineR, new string[] { "float" } },
-		{ OperandType.ShortInlineVar, new string[] { "byte" } },
-	};
+    var args = new Dictionary<OperandType, string[]>() {
+        { OperandType.InlineArg, new string[] { "int" } },
+        { OperandType.InlineBrTarget, new string[] { "Instruction" } },
+        { OperandType.InlineField, new string[] { "FieldReference" } },
+        { OperandType.InlineI, new string[] { "int" } },
+        { OperandType.InlineI8, new string[] { "long" } },
+        { OperandType.InlineMethod, new string[] { "MethodReference" } },
+        { OperandType.InlineNone, new string[] { "" } },
+        { OperandType.InlinePhi, new string[] { "" } },
+        { OperandType.InlineR, new string[] { "double" } },
+        { OperandType.InlineSig, new string[] { "" } },
+        { OperandType.InlineString, new string[] { "string" } },
+        { OperandType.InlineSwitch, new string[] { "Instruction[]" } },
+        { OperandType.InlineTok, new string[] { "FieldReference", "MethodReference", "TypeReference" } },
+        { OperandType.InlineType, new string[] { "TypeReference" } },
+        { OperandType.InlineVar, new string[] { "int", "Instruction" } },
+        { OperandType.ShortInlineArg, new string[] { "byte" } },
+        { OperandType.ShortInlineBrTarget, new string[] { "Instruction" } },
+        { OperandType.ShortInlineI, new string[] { "byte" } },      
+        { OperandType.ShortInlineR, new string[] { "float" } },
+        { OperandType.ShortInlineVar, new string[] { "byte" } },
+    };
 #>
 using System;
 using Mono.Cecil;
@@ -42,30 +42,30 @@ using Mono.Cecil.Cil;
 namespace FluentCecil
 {
     partial class FluentMethodBody
-	{
+    {
 <#
-	foreach (var opcode in opcodes)
-	{
-		var methodName = opcode.Name.Replace("_", "");
-		foreach (var arg in args[opcode.OpCode.OperandType])
-		{
-			var argName = string.IsNullOrEmpty(arg) ? "" : arg.Substring(0, 1).ToLower();
+    foreach (var opcode in opcodes)
+    {
+        var methodName = opcode.Name.Replace("_", "");
+        foreach (var arg in args[opcode.OpCode.OperandType])
+        {
+            var argName = string.IsNullOrEmpty(arg) ? "" : arg.Substring(0, 1).ToLower();
 #>
 <# if (string.IsNullOrEmpty(arg)) { #>
         public FluentMethodBody <#=methodName#>(<#=arg#>)
-	    {
-			addInstruction(ilProcessor.Create(OpCodes.<#=opcode.Name#>));
+        {
+            addInstruction(ilProcessor.Create(OpCodes.<#=opcode.Name#>));
 <# } else { #>
-		public FluentMethodBody <#=methodName#>(<#=arg#> <#=argName#>)
-	    {
-			addInstruction(ilProcessor.Create(OpCodes.<#=opcode.Name#>, <#=argName#>));
+        public FluentMethodBody <#=methodName#>(<#=arg#> <#=argName#>)
+        {
+            addInstruction(ilProcessor.Create(OpCodes.<#=opcode.Name#>, <#=argName#>));
 <# } #>
-	        return this;
-	    }
+            return this;
+        }
 
 <#
-		}
-	}
+        }
+    }
 #>
-	}
+    }
 }
